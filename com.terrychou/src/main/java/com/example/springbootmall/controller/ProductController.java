@@ -24,12 +24,12 @@ public class ProductController {
 
         Product product = productService.getProductById(productId);
 
-        if (product != null) {
+        if (product == null) {
             return ResponseEntity.status(HttpStatus.OK).body(product);
 
         }
         else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 
 
         }
@@ -45,4 +45,33 @@ public class ProductController {
           return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
-}
+
+
+    ///  修改
+    @PutMapping("/products/{productId}")
+    public ResponseEntity<Product> updateProductc(@PathVariable Integer productId,
+                                               @RequestBody @Valid ProductRequest productRequest){
+
+        Product product = productService.getProductById(productId);
+        if (product == null) {
+            System.out.println("沒有此ID");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+            productService.updateProduct(productId,productRequest);
+            Product updatedProduct = productService.getProductById(productId);
+            return  ResponseEntity.status(HttpStatus.OK).body(updatedProduct);}
+
+
+
+
+
+
+
+
+
+    }
+
+
+
+
