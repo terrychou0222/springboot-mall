@@ -24,7 +24,7 @@ public class ProductController {
 
         Product product = productService.getProductById(productId);
 
-        if (product == null) {
+        if (product != null) {
             return ResponseEntity.status(HttpStatus.OK).body(product);
 
         }
@@ -60,10 +60,30 @@ public class ProductController {
 
             productService.updateProduct(productId,productRequest);
             Product updatedProduct = productService.getProductById(productId);
-            return  ResponseEntity.status(HttpStatus.OK).body(updatedProduct);}
+            return  ResponseEntity.status(HttpStatus.OK).body(updatedProduct);
+    }
+
+
+    ///  delete product
+    @DeleteMapping("/products/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId) {
+
+        //檢查這個ID是否存在
+
+        Product product= productService.getProductById(productId);
+        if(product==null){
+            System.out.println("找不到此ID");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        productService.deleteProduct(productId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
 
 
+
+
+    }
 
 
 
