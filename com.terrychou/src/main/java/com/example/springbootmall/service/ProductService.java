@@ -4,8 +4,14 @@ import com.example.springbootmall.dto.ProductRequest;
 import com.example.springbootmall.model.Product;
 
 import javax.validation.Valid;
+import java.util.List;
 
 public interface ProductService {
+
+
+
+    List<Product> getProducts();
+
 
 
     Product getProductById(Integer  productId);
@@ -16,5 +22,8 @@ public interface ProductService {
 
 
     void deleteProduct(Integer productId);
+
+
+
 
 }
