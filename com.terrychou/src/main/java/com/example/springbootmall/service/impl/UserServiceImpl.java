@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService {
 
         String hashedPassword = DigestUtils.md5DigestAsHex(userLoginRequest.getPassword().getBytes());
 
+
         //比較密碼
         if (user.getPassword().equals(hashedPassword)) {
             return user;
