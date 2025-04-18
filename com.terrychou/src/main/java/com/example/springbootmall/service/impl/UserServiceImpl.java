@@ -2,6 +2,7 @@ package com.example.springbootmall.service.impl;
 
 import com.example.springbootmall.dao.UserDao;
 import com.example.springbootmall.dto.UserRegisterRequest;
+import com.example.springbootmall.dto.UsersLoginRequest;
 import com.example.springbootmall.model.User;
 import com.example.springbootmall.service.UserService;
 import org.slf4j.Logger;
@@ -26,7 +27,6 @@ public class UserServiceImpl implements UserService {
         return userDao.getUserById(userId);
     }
 
-
     //註冊
     @Override
     public Integer register(UserRegisterRequest userRegisterRequest) {
@@ -41,6 +41,32 @@ public class UserServiceImpl implements UserService {
         //註冊帳號
         return  userDao.creatUser(userRegisterRequest);
     }
+
+    @Override
+    public User login(UsersLoginRequest userLoginRequest) {
+        User user = userDao.getUserByEmail(userLoginRequest.getEmail());
+
+        if (user == null) {
+            log.warn("該{}尚未註冊", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        if (user.getPassword().equals(userLoginRequest.getPassword())) {
+            return user;
+        }
+        else {
+            log.warn("該{} 密碼錯誤", user.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        }
+
+
+    }
+
+
+
+
+
+
 
 
 
