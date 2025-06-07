@@ -2,6 +2,8 @@ package com.example.springbootmall.dao.impl;
 
 
 import com.example.springbootmall.dao.OrderDao;
+import com.example.springbootmall.dto.OrderQueryParams;
+import com.example.springbootmall.dto.ProductQueryParams;
 import com.example.springbootmall.model.Order;
 import com.example.springbootmall.model.OrderItem;
 import com.example.springbootmall.rowmapper.OrderItemRowMapper;
@@ -14,6 +16,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +29,45 @@ public class OrderDaoImpl   implements OrderDao {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+
+    @Override
+    public Integer countOrder(OrderQueryParams orderQueryParams) {
+        String sql="SELECT count(*) FROM `order` where 1=1";
+        Map<String,Object> map =new HashMap<>();
+        sql =addFilteringSql(sql,map,orderQueryParams);
+
+        Integer total =namedParameterJdbcTemplate.queryForObject(sql,map,Integer.class);
+        return  total;
+    }
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+        String sql= "SELECT order_id ,user_id,total_amount, created_date,last_modified_date FROM `order` where 1=1";
+
+        Map<String,Object> map =new HashMap<>();
+
+        // 查詢條件
+        sql=addFilteringSql(sql,map,orderQueryParams);
+        //排序
+        sql=sql+" ORDER BY  created_date Desc";
+        //分頁
+        sql=sql+" LIMIT :limit offset :offset";
+        map.put("limit",orderQueryParams.getLimit());
+        map.put("offset",orderQueryParams.getOffset());
+
+        List<Order> orderList= namedParameterJdbcTemplate.query(sql,map,new OrderRowMapper());
+        return orderList;
+    }
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -128,6 +172,27 @@ public class OrderDaoImpl   implements OrderDao {
             parameterSources[i].addValue("amount",orderItem.getAmount());
         }
 
+
+
+
+
             namedParameterJdbcTemplate.batchUpdate(sql,parameterSources);
     }
+
+    private  String addFilteringSql(String sql,Map<String,Object> map,OrderQueryParams orderQueryParams){
+       if(orderQueryParams.getUserId()!=null){
+           sql=sql+ " AND user_id=:userId";
+           map.put("userId",orderQueryParams.getUserId());
+
+       }
+
+       return sql;
+    }
+
+
+
+
+
+
+
 }
